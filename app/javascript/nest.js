@@ -24,17 +24,7 @@
     
     $('#logOutButton').on('click', function () {
         dataRef.unauth();
-
-        // Clean all web sites cookies
-        var cookies = document.cookie.split(";");
-        for(var i=0; i < cookies.length; i++) {
-            var equals = cookies[i].indexOf("=");
-            var name = equals > -1 ? cookies[i].substr(0, equals) : cookies[i];
-            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
-        }
-        
-        // Reload page to get authorithation page
-        location.reload();
+        window.location.replace('/auth/nest');
     });
 
 
@@ -58,22 +48,19 @@
 
     function updateStructuresTreeView(allStructures) {
         
-        $('#loadImg').removeClass("hide");
-        $('#loadImg').addClass("show");
-        
+        showLoading();
         _.each($('#structures section'), function (listItem) {
             listItem.remove();
         });
-
+        
+        hideLoading();
         _.each(allStructures, function (structure) {
-            $('#loadImg').removeClass("show");
-            $('#loadImg').addClass("hide");
             $('#structures').append(getCommonHouseViewTemplate(structure.name, structure.structure_id));
             $('#status' + structure.structure_id).text(structure.away);
             $('#'+structure.structure_id + " > header").addClass(structure.away);
         });
     }
-
+    
     function updateSmokeCOAlarmsListners(allStructures, smokeCOAlarms) {
         for (var id in smokeCOAlarms.val()) {
             var alarm = smokeCOAlarms.child(id);
@@ -90,45 +77,31 @@
                 viewElementID = "alarm" + deviceLocation.structure_id + smokeCOAlarmID;
 
             if (alarmState !== state.val()) {
-                $('#' + viewElementID).remove();
-                $('#status' + deviceLocation.structure_id).after("<h6 class=" + state.val() + " id=" + viewElementID + 
-                                                                 ">Smoke status: " + state.val() + "</h6>");
-                $('#' + viewElementID).append("<p>" + roomName + "</p>");
+                setAlarmStatusOnView(deviceLocation, viewElementID, state.val(), roomName);
+
+                var isEmergency = isAnyEmergency(deviceLocation);
+                var isWarning = isAnyWarning(deviceLocation);
                 
-                if(isAnyEmergency(deviceLocation)) {
-                    $('#'+deviceLocation.structure_id + " > header").find("#house_image").attr("src", "images/houseBurned.png");
-                    $('#'+deviceLocation.structure_id + " > header").find("#house_image").addClass("animated infinite shake");
-                    $('#'+deviceLocation.structure_id ).find(".emergency").addClass("animated infinite flash");
-                } else {
-                    $('#'+deviceLocation.structure_id + " > header").find("#house_image").attr("src", "images/house.png");
-                    $('#'+deviceLocation.structure_id + " > header").find("#house_image").removeClass("animated infinite shake");
-                    
+                if(isEmergency) {
+                    setEmergencyEffects(deviceLocation, alarmState);
                 }
-                if(isAnyWarning(deviceLocation)) {
-                    $('#'+deviceLocation.structure_id + " > header").removeClass(alarmState + "House");
-                    $('#'+deviceLocation.structure_id + " > header").addClass("warning" + "House");
+                
+                if(isWarning) {
+                    setWarningEffects(deviceLocation, alarmState);
                 }
-                else{
-                    $('#'+deviceLocation.structure_id + " > header").removeClass(alarmState + "House");
+                
+                if(!isWarning && !isEmergency) {
+                    getFirstHeaderElement(deviceLocation).removeClass(alarmState + "House"); 
+                }
+                
+                if(!isEmergency) {
+                    getFirstHeaderElement(deviceLocation).find("#house_image").attr("src", "images/house.png");
+                    getFirstHeaderElement(deviceLocation).find("#house_image").removeClass("animated infinite shake");
                 }
             }
 
             alarmState = state.val();
         });
-    }
-    
-    function isAnyWarning(location) {
-              if($('#'+location.structure_id ).find(".warning").length > 0){
-          return true;  
-       }
-        return false; 
-    }
-    
-    function isAnyEmergency(location){
-       if($('#'+location.structure_id ).find(".emergency").length > 0){
-          return true;  
-       }
-        return false;
     }
     
     function updateStructureAwayStatusListners(structures, allStructures) {
@@ -144,8 +117,8 @@
         var awayState;
         status.child('away').ref().on('value', function (state) {
             $('#status' + location.structure_id).text(state.val());
-            $('#'+location.structure_id + " > header").removeClass("away auto-away home");
-            $('#'+location.structure_id + " > header").addClass(state.val());
+            getFirstHeaderElement(location).removeClass("away auto-away home");
+            getFirstHeaderElement(location).addClass(state.val());
             awayState = state.val();
         });
     }
@@ -163,7 +136,55 @@
     function getNestToken() {
         return $.cookie('nest_token');
     }
-
+    
+    function showLoading() {
+        $('#loadImg').removeClass("hide");
+        $('#loadImg').addClass("show");
+    }
+    
+    function hideLoading() {
+        $('#loadImg').removeClass("show");
+        $('#loadImg').addClass("hide");
+    }
+    
+    function isAnyWarning(location) {
+              if($('#'+location.structure_id ).find(".warning").length > 0){
+          return true;  
+       }
+        return false; 
+    }
+    
+    function isAnyEmergency(location){
+       if($('#'+location.structure_id ).find(".emergency").length > 0){
+          return true;  
+       }
+        return false;
+    }
+    
+    function setAlarmStatusOnView(deviceLocation, viewElementID, state, roomName) {
+        $('#' + viewElementID).remove();
+        $('#status' + deviceLocation.structure_id).after("<h6 class=" + state + " id=" + viewElementID + 
+                                                         ">Smoke status: " + state + "</h6>");
+        $('#' + viewElementID).append("<p>" + roomName + "</p>");
+    }
+    
+    function setEmergencyEffects(deviceLocation, alarmState) {
+        getFirstHeaderElement(deviceLocation).removeClass(alarmState + "House");
+        getFirstHeaderElement(deviceLocation).find("#house_image").attr("src", "images/houseBurned.png");
+        getFirstHeaderElement(deviceLocation).find("#house_image").addClass("animated infinite shake");
+        $('#'+deviceLocation.structure_id ).find(".emergency").addClass("animated infinite flash");
+        getFirstHeaderElement(deviceLocation).addClass("emergency" + "House");
+    }
+    
+    function setWarningEffects(deviceLocation, alarmState) {
+        getFirstHeaderElement(deviceLocation).removeClass(alarmState + "House");
+        getFirstHeaderElement(deviceLocation).addClass("warning" + "House");
+    }
+    
+    function getFirstHeaderElement(deviceLocation) {
+        return $('#'+deviceLocation.structure_id + " > header");
+    }
+    
     function isIDsChanged(oldModel, newModel) {
         
         var oldModelIDsArray = getStructuresIDsArray(oldModel);
