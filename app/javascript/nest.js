@@ -104,14 +104,13 @@
                     $('#'+deviceLocation.structure_id + " > header").find("#house_image").removeClass("animated infinite shake");
                     
                 }
-                if(isAnyEmergency(deviceLocation) || isAnyWarning(deviceLocation)) {
+                if(isAnyWarning(deviceLocation)) {
                     $('#'+deviceLocation.structure_id + " > header").removeClass(alarmState + "House");
-                    $('#'+deviceLocation.structure_id + " > header").addClass(state.val() + "House");
+                    $('#'+deviceLocation.structure_id + " > header").addClass("warning" + "House");
                 }
                 else{
                     $('#'+deviceLocation.structure_id + " > header").removeClass(alarmState + "House");
                 }
-                
             }
 
             alarmState = state.val();
