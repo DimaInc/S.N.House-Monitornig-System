@@ -45,8 +45,11 @@ See [CONTRIBUTING][contrib] for more information on how to get started.
 
 ## License
 control-jquery - Apache 2.0 - See [LICENSE][license] for more information.
+
 material-design-lite - Apache 2.0 - See [LICENSE][license1] for more information.
+
 underscore - MIT license - See [LICENSE][license2] for more information.
+
 animate.css - MIT license - See [LICENSE][license3] for more information.
 
 [node]: https://nodejs.org/en/download/
