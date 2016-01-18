@@ -55,7 +55,11 @@
         
         hideLoading();
         _.each(allStructures, function (structure) {
-            $('#structures').append(getCommonHouseViewTemplate(structure.name, structure.structure_id));
+            $('#structures').append(commonHouseViewTemplate({
+                name : structure.name,
+                id : structure.structure_id
+            }));
+            
             $('#status' + structure.structure_id).text(structure.away);
             $('#'+structure.structure_id + " > header").addClass(structure.away);
         });
@@ -79,8 +83,8 @@
             if (alarmState !== state.val()) {
                 setAlarmStatusOnView(deviceLocation, viewElementID, state.val(), roomName);
 
-                var isEmergency = isAnyEmergency(deviceLocation);
-                var isWarning = isAnyWarning(deviceLocation);
+                var isEmergency = isAnyEmergency(deviceLocation),
+                    isWarning = isAnyWarning(deviceLocation);
                 
                 if(isEmergency) {
                     setEmergencyEffects(deviceLocation, alarmState);
@@ -261,11 +265,8 @@
         });
     }
     
-    function getCommonHouseViewTemplate(name, id){
-        return " <section class=\"section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp\" id=" + id +
-            "><header class=\"mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet\"><img id=\"house_image\""+
-            "src=\"images/house.png\"></img><img src=\"images/houseBurned.png\"style=\"display:none\">" +
-            "</img></header><div class=\"mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet\"><div class=" +
-            "\"mdl-card__supporting-text\"><h4>" + name + "</h4><h6 id=status" + id + "></h6></div></div></section>";
-    }
+    var commonHouseViewTemplate = _.template("<section class=\"section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp\" id=<%=id%>" +
+            "><header class=\"mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet\"><img id=\"house_image\"src=\"images/house.png\"></img>"+
+            "<img src=\"images/houseBurned.png\"style=\"display:none\"></img></header><div class=\"mdl-card mdl-cell mdl-cell--9-col-desktop "+
+            "mdl-cell--6-col-tablet\"><div class=\"mdl-card__supporting-text\"><h4><%=name%></h4><h6 id=status<%=id%>></h6></div></div></section>");
 })();
