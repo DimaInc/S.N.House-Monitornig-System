@@ -44,14 +44,17 @@ Contributions are always welcome and highly encouraged.
 See [CONTRIBUTING][contrib] for more information on how to get started.
 
 ## License
-
-LCDBOLD - Standard Font License - Copyright 1999 by Samuel Reynolds. See [`app/fonts/LCDBOLD/readme.txt`][font-license] for more information.
-
 control-jquery - Apache 2.0 - See [LICENSE][license] for more information.
+material-design-lite - Apache 2.0 - See [LICENSE][license1] for more information.
+underscore - MIT license - See [LICENSE][license2] for more information.
+animate.css - MIT license - See [LICENSE][license3] for more information.
 
 [node]: https://nodejs.org/en/download/
 [yeoman]: http://yeoman.io/learning/index.html
 [nest-dev-portal]: https://developer.nest.com/clients
 [contrib]: CONTRIBUTING.md
 [license]: LICENSE
+[license1]: https://github.com/jashkenas/underscore/blob/master/LICENSE
+[license2]: https://github.com/google/material-design-lite/blob/master/LICENSE
+[license3]: http://opensource.org/licenses/MIT
 [font-license]: https://github.com/nestlabs/control-jquery/blob/master/app/fonts/LCDBOLD/readme.txt
